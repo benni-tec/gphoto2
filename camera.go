@@ -264,8 +264,8 @@ func (r *ReadSeeker) Read(p []byte) (int, error) {
 	if r.err != nil {
 		return 0, r.err
 	}
-	cSize := C.ulong(len(p))
-	cOffset := C.ulong(r.offset)
+	cSize := C.ulonglong(len(p))
+	cOffset := C.ulonglong(r.offset)
 	s := make([]C.char, len(p))
 	retval := C.gp_camera_file_read(
 		r.c.camera,

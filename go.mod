@@ -1,3 +1,3 @@
-module github.com/frizinak/gphoto2go
+module github.com/themakers/gphoto2go
 
 go 1.13
