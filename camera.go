@@ -28,6 +28,9 @@ func (c *Camera) Init() error {
 	c.context = C.gp_context_new()
 
 	C.gp_camera_new(&c.camera)
+
+	C.gp_camera_ref(c.camera)
+
 	if c.err = cameraResultToError(C.gp_camera_init(c.camera, c.context)); c.err != nil {
 		return c.err
 	} else if c.err = cameraResultToError(C.gp_camera_get_abilities(c.camera, &c.abilities)); c.err != nil {
@@ -37,6 +40,11 @@ func (c *Camera) Init() error {
 	}
 
 	return nil
+}
+
+// Dispose func
+func (c *Camera) Dispose() error {
+	return cameraResultToError(C.gp_camera_unref(c.camera))
 }
 
 // Update re-initializes camera data that can be changed dynamically
@@ -58,6 +66,13 @@ func (c *Camera) Update() error {
 func (c *Camera) Exit() error {
 	err := C.gp_camera_exit(c.camera, c.context)
 	return cameraResultToError(err)
+}
+
+// Exit func
+func (c *Camera) Summary() (summary string, err error) {
+	var text C.CameraText
+	err = cameraResultToError(C.gp_camera_get_summary(c.camera, &text, c.context))
+	return ToString((*C.char)(&text.text[0])), err
 }
 
 // Cancel func
@@ -107,19 +122,26 @@ func (c *Camera) CaptureToFile(filePath string) error {
 }
 
 // AsyncWaitForEvent func
-func (c *Camera) AsyncWaitForEvent(timeout int) chan *CameraEvent {
-	var eventType C.CameraEventType
-	var vp unsafe.Pointer
-	defer C.free(vp)
+func (c *Camera) AsyncWaitForEvent(timeout int) (chan *CameraEvent, chan error) {
 
 	ch := make(chan *CameraEvent)
+	chErr := make(chan error)
 
 	go func() {
-		C.gp_camera_wait_for_event(c.camera, C.int(timeout), &eventType, &vp, c.context)
-		ch <- cCameraEventToGoCameraEvent(vp, eventType)
+        var eventType C.CameraEventType
+        var vp unsafe.Pointer
+        defer C.free(vp)
+
+		if err := cameraResultToError(C.gp_camera_wait_for_event(
+			c.camera, C.int(timeout), &eventType, &vp, c.context,
+		)); err != nil {
+			chErr <- err
+		} else {
+			ch <- cCameraEventToGoCameraEvent(vp, eventType)
+		}
 	}()
 
-	return ch
+	return ch, chErr
 }
 
 // ListFolders func

@@ -18,9 +18,9 @@ const (
 type CameraEventType int
 
 const (
-	eventUnknown   CameraEventType = C.GP_EVENT_UNKNOWN
-	eventTimeout   CameraEventType = C.GP_EVENT_TIMEOUT
-	eventFileAdded CameraEventType = C.GP_EVENT_FILE_ADDED
+	EventUnknown   CameraEventType = C.GP_EVENT_UNKNOWN
+	EventTimeout   CameraEventType = C.GP_EVENT_TIMEOUT
+	EventFileAdded CameraEventType = C.GP_EVENT_FILE_ADDED
 )
 
 // CameraEvent struct
@@ -40,7 +40,7 @@ func cCameraEventToGoCameraEvent(voidPtr unsafe.Pointer, eventType C.CameraEvent
 	ce := new(CameraEvent)
 	ce.Type = CameraEventType(eventType)
 
-	if ce.Type == eventFileAdded {
+	if ce.Type == EventFileAdded {
 		cameraFilePath := (*C.CameraFilePath)(voidPtr)
 		ce.File = C.GoString((*C.char)(&cameraFilePath.name[0]))
 		ce.Folder = C.GoString((*C.char)(&cameraFilePath.folder[0]))
