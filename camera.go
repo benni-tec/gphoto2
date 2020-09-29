@@ -44,7 +44,15 @@ func (c *Camera) Init() error {
 
 // Dispose func
 func (c *Camera) Dispose() error {
-	return cameraResultToError(C.gp_camera_unref(c.camera))
+    if err := c.Exit(); err != nil {
+        return err
+    }
+
+    if err := cameraResultToError(C.gp_camera_unref(c.camera)); err != nil {
+        return err
+    }
+
+    return nil
 }
 
 // Update re-initializes camera data that can be changed dynamically
