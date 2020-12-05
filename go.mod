@@ -1,3 +1,3 @@
-module github.com/themakers/gphoto2go
+module github.com/themakers/gphoto2
 
-go 1.13
+go 1.15
