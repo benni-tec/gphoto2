@@ -1,3 +1,3 @@
-module github.com/themakers/gphoto2
+module github.com/benni-tec/gphoto2
 
 go 1.15
