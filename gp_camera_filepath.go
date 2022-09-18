@@ -95,8 +95,8 @@ func (cf CameraFilePath) GetInfo() (*CameraFileInfo, error) {
 
 func (cf CameraFilePath) ReadOffsetSize(offset, size int) ([]byte, error) {
 	var (
-		c_size   = cSize(size)
-		c_offset = cSize(offset)
+		c_size   = C.ulong(size)
+		c_offset = C.ulong(offset)
 	)
 
 	c_buf, c_buf_free := cMalloc(size)
@@ -130,8 +130,8 @@ func (cf CameraFilePath) ReadOffsetSize(offset, size int) ([]byte, error) {
 
 func (cf CameraFilePath) ReadOffset(offset int, p []byte) (int, error) {
 	var (
-		c_size   = cSize(len(p))
-		c_offset = cSize(offset)
+		c_size   = C.ulong(len(p))
+		c_offset = C.ulong(offset)
 	)
 
 	c_buf := (*C.char)(unsafe.Pointer(&p[0]))
