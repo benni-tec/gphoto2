@@ -4,8 +4,6 @@ package gphoto2
 
 import "C"
 
-func cSize(sz int) C.ulonglong {
-    return C.ulonglong(sz)
+func cSize(sz int) C.ulong {
+    return C.ulong(sz)
 }
-
-
